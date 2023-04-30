@@ -1,6 +1,6 @@
 # react-native-icon
 
-D
+Convert and place icons in native code
 
 ## Installation
 
