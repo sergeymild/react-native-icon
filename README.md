@@ -1,6 +1,11 @@
 # react-native-icon
 
-Convert and place icons in native code
+Convert and place icons in native code. 
+Do not need anymore use `import('../../icon.{svg|png|jpg}')` to show it in `Image`
+Library will move all icons in native folders and generate convinient api to work with them.
+
+Simple:
+`<IconView icon="tomato" size={20} />`
 
 ## Installation
 
@@ -28,6 +33,8 @@ import { IconView } from "react-native-icon";
 // params:
 // size?: number - if styles is not passed size must be passed otherwise icon will not be generated
 // styles?: ViewStyle - if styles passed it also has to include width and height otherwise icon will not be generated
+
+// icon - property will have autocomplete with all icon's names
 <IconView icon="tomato" size={20}  />
 ```
 
