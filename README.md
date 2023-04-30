@@ -33,6 +33,7 @@ import { IconView } from "react-native-icon";
 // params:
 // size?: number - if styles is not passed size must be passed otherwise icon will not be generated
 // styles?: ViewStyle - if styles passed it also has to include width and height otherwise icon will not be generated
+// tint?: string - color in which to tint icon
 
 // icon - property will have autocomplete with all icon's names
 <IconView icon="tomato" size={20}  />
