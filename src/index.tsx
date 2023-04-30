@@ -19,6 +19,7 @@ const LINKING_ERROR =
 type IconProps = {
   icon: AppIconType;
   style?: StyleProp<ViewStyle>;
+  scaleType?: 'centerCrop' | 'fitCenter';
   size?: number;
   tint?: string;
 };
@@ -38,6 +39,7 @@ export const IconView: React.FC<IconProps> = (props) => {
   return (
     <_IconView
       icon={props.icon}
+      scaleType={props.scaleType}
       style={
         props.style
           ? props.style

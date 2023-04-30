@@ -23,7 +23,6 @@ static NSBundle *iconBundle;
     } else {
         self.image = [UIImage imageNamed:self.iconName inBundle:bundle withConfiguration:nil];
     }
-    self.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 -(void)applyTint {
@@ -60,6 +59,14 @@ RCT_EXPORT_MODULE(IconView)
 
 RCT_CUSTOM_VIEW_PROPERTY(icon, NSString, IconImageView) {
     view.iconName = json;
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(scaleType, NSString, IconImageView) {
+    if ([json isEqual: @"centerCrop"]) {
+        view.contentMode = UIViewContentModeScaleToFill;
+    } else {
+        view.contentMode = UIViewContentModeScaleAspectFit;
+    }
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(tint, NSNumber, IconImageView) {
