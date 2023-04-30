@@ -4,6 +4,7 @@ import {
   Platform,
   ViewStyle,
   processColor,
+  StyleProp,
 } from 'react-native';
 import React from 'react';
 import type { AppIconType } from './types';
@@ -17,7 +18,7 @@ const LINKING_ERROR =
 
 type IconProps = {
   icon: AppIconType;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   size?: number;
   tint?: string;
 };

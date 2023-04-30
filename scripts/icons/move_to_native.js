@@ -3,7 +3,7 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const SVGtoPDF = require('svg-to-pdfkit');
 const svg2vectordrawable = require('svg2vectordrawable');
-const svgDim = require('svg-dimensions');
+const { getSvgDimensions } = require('./getSvgDimensions');
 
 const imagesIOSParentPath = p.resolve(
   __dirname,
@@ -62,12 +62,20 @@ function camelToSnake(str) {
   });
 }
 function name(filename) {
-  return camelToSnake(filename);
+  return camelToSnake(filename).replaceAll(' ', '_').replaceAll('-', '_');
 }
 
 function getDimensions(svgPath) {
   return new Promise((resolve) => {
-    svgDim.get(svgPath, (err, dimensions) => resolve(dimensions));
+    if (svgPath.includes('congo')) {
+      console.log('[MoveToNative.]');
+    }
+    getSvgDimensions(svgPath, (err, dimensions) => {
+      if (dimensions.width === 0 || dimensions.height === 0) {
+        console.warn('cant get dimensions', svgPath);
+      }
+      resolve(dimensions);
+    });
   });
 }
 
@@ -136,9 +144,13 @@ function createPdfFromSvg(svgPath) {
 
 function createXmlFromSvg(svgPath) {
   return new Promise(async (resolve) => {
-    const filename = name(p.basename(svgPath, p.extname(svgPath)));
-    const xmlCode = await svg2vectordrawable(fs.readFileSync(svgPath));
-    fs.writeFileSync(`${imagesAndroidVectorPath}/${filename}.xml`, xmlCode);
+    try {
+      const filename = name(p.basename(svgPath, p.extname(svgPath)));
+      const xmlCode = await svg2vectordrawable(fs.readFileSync(svgPath));
+      fs.writeFileSync(`${imagesAndroidVectorPath}/${filename}.xml`, xmlCode);
+    } catch (e) {
+      console.warn(`Error convert ${svgPath}`);
+    }
   });
 }
 
