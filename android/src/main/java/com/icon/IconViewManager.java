@@ -1,15 +1,14 @@
 package com.icon;
 
-import android.graphics.Color;
-import android.view.View;
-
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-public class IconViewManager extends SimpleViewManager<View> {
+public class IconViewManager extends SimpleViewManager<AppCompatImageView> {
   public static final String REACT_CLASS = "IconView";
 
   @Override
@@ -20,12 +19,18 @@ public class IconViewManager extends SimpleViewManager<View> {
 
   @Override
   @NonNull
-  public View createViewInstance(ThemedReactContext reactContext) {
-    return new View(reactContext);
+  public AppCompatImageView createViewInstance(@NonNull ThemedReactContext reactContext) {
+    return new AppCompatImageView(reactContext);
   }
 
-  @ReactProp(name = "color")
-  public void setColor(View view, String color) {
-    view.setBackgroundColor(Color.parseColor(color));
+  @ReactProp(name = "icon")
+  public void setIcon(AppCompatImageView view, String icon) {
+    int id = view.getContext().getResources().getIdentifier(icon, "drawable", view.getContext().getPackageName());
+    view.setImageResource(id);
+  }
+
+  @ReactProp(name = "tint")
+  public void setTint(AppCompatImageView view, @ColorInt int color) {
+    view.setColorFilter(color);
   }
 }
