@@ -62,7 +62,11 @@ function camelToSnake(str) {
   });
 }
 function name(filename) {
-  return camelToSnake(filename).replaceAll(' ', '_').replaceAll('-', '_');
+  let newName = camelToSnake(filename)
+    .replaceAll(' ', '_')
+    .replaceAll('-', '_');
+  if (!isNaN(parseInt(newName[0], 10))) newName = `i_${newName}`;
+  return newName;
 }
 
 function getDimensions(svgPath) {
