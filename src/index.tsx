@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import type { AppIconType } from './types';
+export { AppIconType };
 
 const LINKING_ERROR =
   `The package 'react-native-icon' doesn't seem to be linked. Make sure: \n\n` +
