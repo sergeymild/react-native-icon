@@ -7,8 +7,6 @@ D
 ```sh
 // add to package.json
 "react-native-icon":"sergeymild/react-native-icon#0.0.1"
-""
-
 run yarn
 ```
 
