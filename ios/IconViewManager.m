@@ -1,34 +1,30 @@
 #import <React/RCTViewManager.h>
 
 @interface IconViewManager : RCTViewManager
+
 @end
 
 @implementation IconViewManager
 
 RCT_EXPORT_MODULE(IconView)
 
-- (UIView *)view
-{
-  return [[UIView alloc] init];
+- (UIImageView *)view {
+  return [[UIImageView alloc] init];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(color, NSString, UIView)
-{
-  [view setBackgroundColor:[self hexStringToColor:json]];
+static NSBundle *iconBundle;
+
++(NSBundle *)getResourcesBundle {
+    if (iconBundle) return iconBundle;
+    iconBundle = [NSBundle bundleWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"IconAssets" withExtension:@"bundle"]];
+    return iconBundle;
 }
 
-- hexStringToColor:(NSString *)stringToConvert
-{
-  NSString *noHashString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
-  NSScanner *stringScanner = [NSScanner scannerWithString:noHashString];
-
-  unsigned hex;
-  if (![stringScanner scanHexInt:&hex]) return nil;
-  int r = (hex >> 16) & 0xFF;
-  int g = (hex >> 8) & 0xFF;
-  int b = (hex) & 0xFF;
-
-  return [UIColor colorWithRed:r / 255.0f green:g / 255.0f blue:b / 255.0f alpha:1.0f];
+RCT_CUSTOM_VIEW_PROPERTY(icon, NSString, UIImageView) {
+    NSLog(@"--- %@", json);
+    NSBundle *bundle = [IconViewManager getResourcesBundle];
+    view.image = [UIImage imageNamed:@"Icon_check" inBundle:bundle withConfiguration:nil];
+  //[view setBackgroundColor:[self hexStringToColor:json]];
 }
 
 @end

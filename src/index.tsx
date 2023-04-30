@@ -12,8 +12,8 @@ const LINKING_ERROR =
   '- You are not using Expo Go\n';
 
 type IconProps = {
-  color: string;
-  style: ViewStyle;
+  icon: string;
+  style?: ViewStyle;
 };
 
 const ComponentName = 'IconView';

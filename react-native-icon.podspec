@@ -15,6 +15,9 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/sergeymild/react-native-icon.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
+  s.resource_bundles = {
+      'IconAssets' => ['ios/**/*.xcassets']
+    }
 
   s.dependency "React-Core"
 
