@@ -17,6 +17,7 @@ const LINKING_ERROR =
 type IconProps = {
   icon: AppIconType;
   style?: ViewStyle;
+  size?: number;
   tint?: string;
 };
 
@@ -30,10 +31,18 @@ export const _IconView =
       };
 
 export const IconView: React.FC<IconProps> = (props) => {
+  if (!props.style && !props.size)
+    console.warn('IconView has contains either size or style');
   return (
     <_IconView
       icon={props.icon}
-      style={props.style}
+      style={
+        props.style
+          ? props.style
+          : props.size
+          ? { width: props.size, height: props.size }
+          : undefined
+      }
       //@ts-ignore
       tint={props.tint ? processColor(props.tint) : undefined}
     />
