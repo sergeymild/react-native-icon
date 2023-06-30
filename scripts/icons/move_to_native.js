@@ -4,6 +4,7 @@ const PDFDocument = require('pdfkit');
 const SVGtoPDF = require('svg-to-pdfkit');
 const svg2vectordrawable = require('svg2vectordrawable');
 const { getSvgDimensions } = require('./getSvgDimensions');
+const sizeOf = require('image-size');
 
 const imagesIOSParentPath = p.resolve(
   __dirname,
@@ -71,15 +72,7 @@ function name(filename) {
 
 function getDimensions(svgPath) {
   return new Promise((resolve) => {
-    if (svgPath.includes('congo')) {
-      console.log('[MoveToNative.]');
-    }
-    getSvgDimensions(svgPath, (err, dimensions) => {
-      if (dimensions.width === 0 || dimensions.height === 0) {
-        console.warn('cant get dimensions', svgPath);
-      }
-      resolve(dimensions);
-    });
+    getSvgDimensions(svgPath, (err, dimensions) => resolve(dimensions));
   });
 }
 
@@ -105,7 +98,8 @@ function createIOSRasterIcon(path) {
     fs.mkdirSync(fileResultFolder);
     fs.copyFileSync(path, fileResultPath);
     writeContentsFile(fileContentsPath, filename, p.extname(path));
-    resolve();
+    const size = await sizeOf(path);
+    resolve(size);
   });
 }
 
@@ -139,7 +133,7 @@ function createPdfFromSvg(svgPath) {
     SVGtoPDF(doc, svg, 0, 0, { assumePt: true, ...dimensions });
     stream.on('finish', () => {
       writeContentsFile(fileContentsPath, filename, '.pdf');
-      resolve();
+      resolve(dimensions);
     });
     doc.pipe(stream);
     doc.end();
@@ -148,34 +142,62 @@ function createPdfFromSvg(svgPath) {
 
 function createXmlFromSvg(svgPath) {
   return new Promise(async (resolve) => {
+    const filename = name(p.basename(svgPath, p.extname(svgPath)));
     try {
-      const filename = name(p.basename(svgPath, p.extname(svgPath)));
       const xmlCode = await svg2vectordrawable(fs.readFileSync(svgPath));
       fs.writeFileSync(`${imagesAndroidVectorPath}/${filename}.xml`, xmlCode);
+      resolve();
     } catch (e) {
-      console.warn(`Error convert ${svgPath}`);
+      throw new Error(
+        `Failed convert ${filename} to vectorDrawable for Android`
+      );
     }
   });
 }
 
-const args = process.argv.slice(2);
-const parts = args[0].split('=');
-if (parts[0] === 'assets') {
-  const types = [];
-  const icons = findInDir(parts[1], ['.svg', '.jpg', '.png']);
-  for (const iconPath of icons) {
-    const ext = p.extname(iconPath);
-    types.push(p.basename(iconPath, ext));
-    if (ext === '.svg') {
-      createPdfFromSvg(iconPath);
-      createXmlFromSvg(iconPath);
-    } else if (['.jpg', '.png'].includes(ext)) {
-      createIOSRasterIcon(iconPath);
-      createAndroidRasterIcon(iconPath);
-    }
+function assetDimensions(name, dimensions) {
+  if (!dimensions || dimensions.width === 0 || dimensions.height === 0) {
+    throw new Error(`Failed to get size of icon: ${name}`);
   }
-
-  typesWriterStream.write(
-    `export type AppIconType = ${types.map((c) => `'${name(c)}'`).join(' | ')}`
-  );
 }
+
+(async () => {
+  const args = process.argv.slice(2);
+  const parts = args[0].split('=');
+  if (parts[0] === 'assets') {
+    const types = [];
+    const icons = findInDir(parts[1], ['.svg', '.jpg', '.png']);
+    for (const iconPath of icons) {
+      const ext = p.extname(iconPath);
+      const basename = p.basename(iconPath, ext);
+      if (ext === '.svg') {
+        const dimensions = await createPdfFromSvg(iconPath);
+        await createXmlFromSvg(iconPath);
+        assetDimensions(basename, dimensions);
+        types.push({ name: basename, dimensions });
+      } else if (['.jpg', '.png'].includes(ext)) {
+        const dimensions = await createIOSRasterIcon(iconPath);
+        assetDimensions(basename, dimensions);
+        createAndroidRasterIcon(iconPath);
+        types.push({ name: basename, dimensions });
+      }
+    }
+
+    typesWriterStream.write(
+      `export type AppIconType = ${types
+        .map((c) => `'${name(c.name)}'`)
+        .join(' | ')}`
+    );
+
+    typesWriterStream.write(
+      `\nexport const IconSize = {${types
+        .map(
+          (c) =>
+            `\n\t\t${name(c.name)}: {width: ${c.dimensions.width}, height: ${
+              c.dimensions.height
+            }}`
+        )
+        .join(',')}\n}`
+    );
+  }
+})();

@@ -6,7 +6,7 @@ import { IconView } from 'react-native-icon';
 export default function App() {
   return (
     <View style={styles.container}>
-      <IconView icon={'Icon_check'} style={styles.box} />
+      <IconView icon={'filter_svg_stroke'} style={styles.box} />
     </View>
   );
 }
@@ -21,6 +21,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginVertical: 20,
-    backgroundColor: 'yellow'
+    backgroundColor: 'yellow',
   },
 });

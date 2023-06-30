@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import type { AppIconType } from './types';
+import { IconSize } from './types';
 export { AppIconType };
 
 const LINKING_ERROR =
@@ -34,19 +35,18 @@ export const _IconView =
       };
 
 export const IconView: React.FC<IconProps> = (props) => {
-  if (!props.style && !props.size)
-    console.warn('IconView has contains either size or style');
+  let style: StyleProp<ViewStyle> = props.style;
+  if (!style)
+    style = {
+      width: props.size ?? IconSize[props.icon].width,
+      height: props.size ?? IconSize[props.icon].height,
+    };
+
   return (
     <_IconView
       icon={props.icon}
       scaleType={props.scaleType}
-      style={
-        props.style
-          ? props.style
-          : props.size
-          ? { width: props.size, height: props.size }
-          : undefined
-      }
+      style={style}
       //@ts-ignore
       tint={props.tint ? processColor(props.tint) : undefined}
     />

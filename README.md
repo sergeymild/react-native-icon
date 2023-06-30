@@ -11,6 +11,15 @@ Simple:
 
 ```sh
 // add to package.json
+"scripts": {
+    "nstallIconsDeps": "cd node_modules/react-native-icon/scripts/icons && yarn",
+    
+    // assets=pathToAssets - where all icons is present (usually in the same directory where src folder)
+    // pathToAssets - must not be placed in src directory to exclude it from build process
+    "generateIcons": "node node_modules/react-native-icon/scripts/icons/move_to_native.js assets=icons",
+    
+    "postinstall": "yarn nstallIconsDeps && yarn generateIcons"
+}
 "react-native-icon":"sergeymild/react-native-icon#0.0.1"
 run yarn
 ```
@@ -18,15 +27,6 @@ run yarn
 ## Usage
 
 ```js
-// add this line to package.json in 'scripts' block
-// assets=pathToAssets - where all icons is present (usually in the same directory where src folder)
-// pathToAssets - must not be placed in src directory to exclude it from build process
-"generateIcons": "node node_modules/react-native-icon/scripts/icons/move_to_native.js assets=icons"
-
-// after run `yarn generateIcons`
-// script will find all (svg, png, jpg) icons, covert svg to pdf(IOS) vector(Android) and put it to right assets directories
-// also it will generate `AppIconType` for autocompletion
-
 import { IconView } from "react-native-icon";
 
 // ...
