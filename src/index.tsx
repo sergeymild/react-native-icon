@@ -5,6 +5,8 @@ import {
   ViewStyle,
   processColor,
   StyleProp,
+  StyleSheet,
+  View,
 } from 'react-native';
 import React from 'react';
 import type { AppIconType } from './types';
@@ -20,6 +22,7 @@ const LINKING_ERROR =
 type IconProps = {
   icon: AppIconType;
   style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   scaleType?: 'centerCrop' | 'fitCenter';
   size?: number;
   tint?: string;
@@ -36,19 +39,24 @@ export const _IconView =
 
 export const IconView: React.FC<IconProps> = (props) => {
   let style: StyleProp<ViewStyle> = props.style;
-  if (!style)
-    style = {
-      width: props.size ?? IconSize[props.icon].width,
-      height: props.size ?? IconSize[props.icon].height,
-    };
+  if (!style) style = {};
+  style = StyleSheet.flatten(style);
+  const width = style.width || props.size || IconSize[props.icon].width;
+  const height = style.height || props.size || IconSize[props.icon].height;
 
-  return (
+  const IconComponent = (
     <_IconView
       icon={props.icon}
       scaleType={props.scaleType}
-      style={style}
+      style={[style, { width, height }]}
       //@ts-ignore
       tint={props.tint ? processColor(props.tint) : undefined}
     />
   );
+
+  if (props.containerStyle) {
+    return <View children={IconComponent} style={props.containerStyle} />;
+  }
+
+  return IconComponent;
 };
