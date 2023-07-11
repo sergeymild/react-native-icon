@@ -26,6 +26,7 @@ type IconProps = {
   scaleType?: 'centerCrop' | 'fitCenter';
   size?: number;
   tint?: string;
+  scale?: number;
 };
 
 const ComponentName = 'IconView';
@@ -41,8 +42,14 @@ export const IconView: React.FC<IconProps> = (props) => {
   let style: StyleProp<ViewStyle> = props.style;
   if (!style) style = {};
   style = StyleSheet.flatten(style);
-  const width = style.width || props.size || IconSize[props.icon].width;
-  const height = style.height || props.size || IconSize[props.icon].height;
+  const width =
+    style.width ||
+    props.size ||
+    IconSize[props.icon].width / (props.scale ?? 1);
+  const height =
+    style.height ||
+    props.size ||
+    IconSize[props.icon].height / (props.scale ?? 1);
 
   const IconComponent = (
     <_IconView
