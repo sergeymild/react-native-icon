@@ -1,6 +1,6 @@
 {
   "name": "react-native-icon",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "test",
   "main": "src/index",
   "module": "src/index",
@@ -69,11 +69,6 @@
     "react": "*",
     "react-native": "*"
   },
-  "engines": {
-    "node": ">= 16.0.0"
-  },
-  "packageManager": "^yarn@1.22.15",
-
 
   "eslintConfig": {
     "root": true,
