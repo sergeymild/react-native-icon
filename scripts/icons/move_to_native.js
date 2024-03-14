@@ -166,7 +166,7 @@ function assetDimensions(name, dimensions) {
   const parts = args[0].split('=');
   if (parts[0] === 'assets') {
     const types = [];
-    const icons = findInDir(parts[1], ['.svg', '.jpg', '.png']);
+    const icons = findInDir(parts[1], ['.svg', '.jpg', '.png', '.jpeg']);
     for (const iconPath of icons) {
       const ext = p.extname(iconPath);
       const basename = p.basename(iconPath, ext);
@@ -174,14 +174,16 @@ function assetDimensions(name, dimensions) {
         const dimensions = await createPdfFromSvg(iconPath);
         await createXmlFromSvg(iconPath);
         assetDimensions(basename, dimensions);
-        types.push({ name: basename, dimensions });
-      } else if (['.jpg', '.png'].includes(ext)) {
+        types.push({ name: basename, dimensions, isVector: true });
+      } else if (['.jpg', '.png', '.jpeg'].includes(ext)) {
         const dimensions = await createIOSRasterIcon(iconPath);
         assetDimensions(basename, dimensions);
         createAndroidRasterIcon(iconPath);
-        types.push({ name: basename, dimensions });
+        types.push({ name: basename, dimensions, isVector: false });
       }
     }
+
+    typesWriterStream.write(`import {Platform} from 'react-native';\n\n`);
 
     typesWriterStream.write(
       `export type AppIconType = ${types
@@ -196,6 +198,17 @@ function assetDimensions(name, dimensions) {
             `\n\t\t${name(c.name)}: {width: ${c.dimensions.width}, height: ${
               c.dimensions.height
             }}`
+        )
+        .join(',')}\n}`
+    );
+
+    typesWriterStream.write(
+      `\nexport const IconPath = {${types
+        .filter(c => !c.isVector)
+        .map(
+          (c) =>
+            // `\n\t\t${name(c.name)}: {ios: 'IconAssets.bundle/${name(c.name)}', android:  'IconAssets.bundle/${name(c.name)}'}`
+            `\n\t\t${name(c.name)}: () => Platform.OS === 'ios' ? 'IconAssets.bundle/${name(c.name)}' : '${name(c.name)}'`
         )
         .join(',')}\n}`
     );

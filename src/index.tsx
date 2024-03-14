@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import React from 'react';
 import type { AppIconType } from './types';
-import { IconSize } from './types';
-export { AppIconType };
+import { IconSize, IconPath } from './types';
+export { AppIconType, IconPath };
 
 const LINKING_ERROR =
   `The package 'react-native-icon' doesn't seem to be linked. Make sure: \n\n` +
