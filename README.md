@@ -27,7 +27,7 @@ run yarn
 ## Usage
 
 ```js
-import { IconView } from "react-native-icon";
+import { IconView, IconPath } from "react-native-icon";
 
 // ...
 // params:
@@ -37,6 +37,9 @@ import { IconView } from "react-native-icon";
 
 // icon - property will have autocomplete with all icon's names
 <IconView icon="tomato" size={20}  />
+
+// for all raster icons (jpg, png) library will also generate paths for easily present them in ImageView
+<ImageView source={{uri: IconPath.cube()}}  />
 ```
 
 ## Contributing
