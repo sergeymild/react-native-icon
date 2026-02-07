@@ -62,34 +62,19 @@ console.log(`Project directory: ${projectDir}`)
 console.log(`Output directory: ${OUTPUT_DIR}`)
 console.log('='.repeat(50))
 
-// Run icons generator (SVG)
-console.log('\n📦 Running SVG icons generator...\n')
+// Run combined generator
+console.log('\n📦 Running combined icons generator...\n')
 try {
-  execSync(`node "${path.join(SCRIPTS_DIR, 'iconsGenerator.js')}"`, {
+  execSync(`node "${path.join(SCRIPTS_DIR, 'combinedGenerator.js')}"`, {
     stdio: 'inherit',
     cwd: SCRIPTS_DIR,
-    env: { ...process.env, ICONS_OUTPUT_DIR: OUTPUT_DIR }
+    env: { ...process.env, ICONS_OUTPUT_DIR: OUTPUT_DIR, ICONS_PROJECT_DIR: projectDir }
   })
-  console.log('\n✅ SVG icons generated successfully')
 } catch (error) {
-  console.error('\n❌ SVG icons generation failed:', error.message)
-  process.exit(1)
-}
-
-// Run local image generator
-console.log('\n📦 Running local image generator...\n')
-try {
-  execSync(`node "${path.join(SCRIPTS_DIR, 'local_image_generator.js')}"`, {
-    stdio: 'inherit',
-    cwd: SCRIPTS_DIR,
-    env: { ...process.env, ICONS_OUTPUT_DIR: OUTPUT_DIR }
-  })
-  console.log('\n✅ Local images generated successfully')
-} catch (error) {
-  console.error('\n❌ Local images generation failed:', error.message)
+  console.error('\n❌ Icons generation failed:', error.message)
   process.exit(1)
 }
 
 console.log('\n' + '='.repeat(50))
-console.log('✨ All generators completed successfully!')
+console.log('✨ Generation completed!')
 console.log('='.repeat(50))
