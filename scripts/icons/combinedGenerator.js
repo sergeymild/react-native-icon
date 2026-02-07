@@ -14,6 +14,22 @@ const outPath = process.env.ICONS_OUTPUT_DIR || p.join(projectDir, 'src/types')
 console.log('⛱️ Project dir:', projectDir)
 console.log('⛱️ Output path:', outPath)
 
+// Sanitize name for use as identifier (remove spaces, special chars)
+function sanitizeName(name) {
+  return name
+    .replace(/[\s-]+/g, '_')        // spaces and dashes to underscores
+    .replace(/[^a-zA-Z0-9_]/g, '')  // remove special chars
+    .replace(/^(\d)/, '_$1')        // prefix with _ if starts with digit
+}
+
+// Convert name to PascalCase
+function toPascalCase(name) {
+  return sanitizeName(name)
+    .split(/[-_]/)
+    .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+    .join('')
+}
+
 // Find files recursively
 function findFiles(dir, extensions, fileList = [], uniqueNames = new Set()) {
   if (!fs.existsSync(dir)) return fileList
@@ -31,9 +47,10 @@ function findFiles(dir, extensions, fileList = [], uniqueNames = new Set()) {
     } else {
       const ext = p.extname(file).toLowerCase()
       if (extensions.includes(ext)) {
-        const name = p.basename(file, ext)
+        const rawName = p.basename(file, ext)
+        const name = sanitizeName(rawName)
         if (uniqueNames.has(name)) {
-          throw new Error(`Duplicate icon name: ${name}`)
+          throw new Error(`Duplicate icon name: ${name} (from file: ${file})`)
         }
         uniqueNames.add(name)
         fileList.push({ path: filePath, name, ext })
@@ -54,14 +71,6 @@ function getImageDimensions(imagePath) {
     console.warn(`Could not read dimensions for ${imagePath}:`, e.message)
     return { width: 0, height: 0 }
   }
-}
-
-// Convert name to PascalCase
-function toPascalCase(name) {
-  return name
-    .split(/[-_]/)
-    .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
-    .join('')
 }
 
 // Find all icons
@@ -205,7 +214,7 @@ const getSvgIcon = (
   width: number | undefined,
   height: number | undefined,
   style: StyleProp<ViewStyle> | undefined
-): JSX.Element | null => {
+): React.ReactElement | null => {
   const meta = ICON_META[type]
   if (meta.kind !== 'svg') return null
 
@@ -252,7 +261,7 @@ const ${COMPONENT_NAME} = (
   if (width !== undefined) finalWidth = width
   if (height !== undefined) finalHeight = height
 
-  let content: JSX.Element | null = null
+  let content: React.ReactElement | null = null
 
   if (meta.kind === 'svg') {
     content = getSvgIcon(type, tint, stroke, color, finalWidth, finalHeight, style)
