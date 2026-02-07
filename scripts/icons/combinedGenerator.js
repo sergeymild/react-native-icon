@@ -135,6 +135,7 @@ for (const svg of svgFiles) {
   if (!relativePath.startsWith('.')) {
     relativePath = './' + relativePath
   }
+  logger.write(`// @ts-ignore\n`)
   logger.write(`import ${componentName} from '${relativePath}'\n`)
 }
 
