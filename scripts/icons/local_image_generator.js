@@ -1,14 +1,22 @@
 const fs = require('fs')
 const path = require('path')
-const imageSize = require('image-size')
+const { imageSize } = require('image-size')
 const {execSync} = require('child_process')
 
-const SRC_DIR = path.join(__dirname, './src')
-const OUTPUT_FILE = path.join(SRC_DIR, 'src/assets/AppLocalImage.tsx')
+// Get project directory from environment or use current directory
+const projectDir = process.env.ICONS_PROJECT_DIR || process.cwd()
+const SRC_DIR = projectDir
+
+// Use environment variable for output or fall back to default
+const OUTPUT_DIR = process.env.ICONS_OUTPUT_DIR || path.join(projectDir, 'src/types')
+const OUTPUT_FILE = path.join(OUTPUT_DIR, 'AppLocalImage.tsx')
 
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg']
+const SKIP_DIRS = ['node_modules', '.git', 'build', 'android', 'ios']
 
 function findImages(dir, images = []) {
+  if (!fs.existsSync(dir)) return images
+
   const files = fs.readdirSync(dir)
 
   for (const file of files) {
@@ -16,7 +24,9 @@ function findImages(dir, images = []) {
     const stat = fs.statSync(filePath)
 
     if (stat.isDirectory()) {
-      findImages(filePath, images)
+      if (!SKIP_DIRS.includes(file)) {
+        findImages(filePath, images)
+      }
     } else {
       const ext = path.extname(file).toLowerCase()
       if (IMAGE_EXTENSIONS.includes(ext)) {
@@ -49,7 +59,8 @@ function generateRelativeImportPath(imagePath) {
 
 function getImageDimensions(imagePath) {
   try {
-    const dimensions = imageSize(imagePath)
+    const buffer = fs.readFileSync(imagePath)
+    const dimensions = imageSize(buffer)
     return {width: dimensions.width, height: dimensions.height}
   } catch (e) {
     console.warn(`Could not read dimensions for ${imagePath}:`, e.message)
@@ -158,10 +169,18 @@ export const AppLocalImage: React.FC<AppLocalImageProps> = ({
 }
 
 function main() {
+  console.log('⛱️ Project dir:', projectDir)
+  console.log('⛱️ Images search path:', SRC_DIR)
+  console.log('⛱️ Output path:', OUTPUT_DIR)
   console.log('Scanning for images in', SRC_DIR)
 
   const images = findImages(SRC_DIR)
   console.log(`Found ${images.length} images`)
+
+  if (images.length === 0) {
+    console.log('No images found, skipping AppLocalImage.tsx generation')
+    return
+  }
 
   const component = generateComponent(images)
 

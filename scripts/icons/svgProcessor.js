@@ -342,43 +342,4 @@ function processSvgFile(filePath) {
   return { type: iconType, modified }
 }
 
-function findInDir(dir, filter, fileList = []) {
-  const files = fs.readdirSync(dir)
-
-  files.forEach((file) => {
-    const filePath = p.join(dir, file)
-    const fileStat = fs.lstatSync(filePath)
-
-    if (fileStat.isDirectory()) {
-      findInDir(filePath, filter, fileList)
-    } else if (p.extname(filePath) === filter) {
-      fileList.push(filePath)
-    }
-  })
-
-  return fileList
-}
-
-// Main processing
-const path = './assets/svg'
-
-console.log('🔄 Processing SVG files...')
-const icons = findInDir(path, '.svg')
-const iconMetadata = new Map()
-let modifiedCount = 0
-
-for (const icon of icons) {
-  const name = p.basename(icon, '.svg')
-  // if (name !== "icLock24") continue
-  const result = processSvgFile(icon)
-  iconMetadata.set(name, result.type)
-  if (result.modified) {
-    modifiedCount++
-    console.log(`  ✓ Modified: ${name} (type: ${result.type})`)
-  }
-}
-
-console.log(`✅ Processed ${icons.length} icons, modified ${modifiedCount}`)
-
-// Export metadata for use in generator
-module.exports = { processSvgFile, iconMetadata }
+module.exports = { processSvgFile }

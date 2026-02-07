@@ -4,7 +4,10 @@ const { processSvgFile } = require('./svgProcessor')
 
 const uniqueNames = new Set()
 const iconMetadata = new Map() // Store metadata about each icon
-function findInDir(dir, filter, fileList = []) {
+
+function findInDir(dir, filter, fileList = [], skipDirs = ['node_modules', '.git', 'build', 'android', 'ios']) {
+  if (!fs.existsSync(dir)) return fileList
+
   const files = fs.readdirSync(dir)
 
   files.forEach((file) => {
@@ -12,10 +15,12 @@ function findInDir(dir, filter, fileList = []) {
     const fileStat = fs.lstatSync(filePath)
 
     if (fileStat.isDirectory()) {
-      findInDir(filePath, filter, fileList)
+      if (!skipDirs.includes(file)) {
+        findInDir(filePath, filter, fileList, skipDirs)
+      }
     } else if (p.extname(filePath) === filter) {
       const name = p.basename(filePath, filter)
-      if (uniqueNames.has(name)) throw new Error(`file exists: ${name}`)
+      if (uniqueNames.has(name)) throw new Error(`Duplicate icon name: ${name}`)
 
       uniqueNames.add(name)
       fileList.push(filePath)
@@ -25,19 +30,25 @@ function findInDir(dir, filter, fileList = []) {
   return fileList
 }
 
-const path = './assets/svg'
-const requirePath = 'look-box/assets/svg'
+// Get project directory from environment or use current directory
+const projectDir = process.env.ICONS_PROJECT_DIR || process.cwd()
+const svgSearchPath = projectDir
 
-const MODULE_NAME = '_rn-generated-icons'
 const COMPONENT_NAME = 'AppIcon'
 
-const outPath = `../node_modules/${MODULE_NAME}`
-const outputPackagePath = `${outPath}/package.json`
-const outputIndexPath = `${outPath}/index.ts`
-console.log('⛱️ outpath', outPath)
+// Use environment variable for output or fall back to default
+const outPath = process.env.ICONS_OUTPUT_DIR || p.join(projectDir, 'src/types')
+console.log('⛱️ Project dir:', projectDir)
+console.log('⛱️ SVG search path:', svgSearchPath)
+console.log('⛱️ Output path:', outPath)
 
-const icons = findInDir(path, '.svg')
-const fileName = `${outPath}/${COMPONENT_NAME}.tsx`
+const icons = findInDir(svgSearchPath, '.svg')
+const fileName = p.join(outPath, `${COMPONENT_NAME}.tsx`)
+
+if (icons.length === 0) {
+  console.log('No SVG files found, skipping AppIcon.tsx generation')
+  process.exit(0)
+}
 
 // Process all SVG files and store metadata
 console.log('🔄 Processing SVG files...')
@@ -53,20 +64,10 @@ for (const icon of icons) {
 }
 console.log(`✅ Processed ${icons.length} icons, modified ${modifiedCount}`)
 
-// Clean
-fs.rmSync(outPath, { recursive: true, force: true })
-fs.mkdirSync(outPath, { recursive: true })
-// Prepare module
-fs.writeFileSync(
-  outputPackagePath,
-  `{\n  "name": "${MODULE_NAME}",\n  "main": "index"\n}`,
-  { encoding: 'utf-8' },
-)
-fs.writeFileSync(
-  outputIndexPath,
-  `import ${COMPONENT_NAME} from './${COMPONENT_NAME}'\n\nexport default ${COMPONENT_NAME}\nexport { ${COMPONENT_NAME}Props, ${COMPONENT_NAME}Type } from './${COMPONENT_NAME}'\n`,
-  { encoding: 'utf-8' },
-)
+// Ensure output directory exists
+if (!fs.existsSync(outPath)) {
+  fs.mkdirSync(outPath, { recursive: true })
+}
 
 if (fs.existsSync(fileName)) fs.unlinkSync(fileName)
 
@@ -88,8 +89,12 @@ for (const icon of icons) {
     .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
     .join('')
 
-  const require = `./${icon}`.replace(path, requirePath)
-  logger.write(`import ${capitalized} from '${require}'\n`)
+  // Compute relative path from output file to SVG file
+  let relativePath = p.relative(outPath, icon)
+  if (!relativePath.startsWith('.')) {
+    relativePath = './' + relativePath
+  }
+  logger.write(`import ${capitalized} from '${relativePath}'\n`)
 }
 
 logger.write(`

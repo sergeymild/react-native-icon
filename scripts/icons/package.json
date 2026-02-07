@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "generate": "node generate.js"
+  },
   "dependencies": {
     "image-size": "^2.0.2"
   }
