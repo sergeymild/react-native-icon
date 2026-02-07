@@ -1,1 +1,1 @@
-export { IconView, IconPath } from './IconView';
+export { IconView, AppIconType } from './IconView';
