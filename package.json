@@ -50,30 +50,28 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@react-native-community/eslint-config": "^3.0.2",
-    "@types/react": "~17.0.21",
-    "@types/react-native": "0.70.0",
+    "@react-native/eslint-config": "^0.76.0",
+    "@types/react": "~18.3.12",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
     "react": "18.2.0",
-    "react-native": "0.71.7",
-    "typescript": "^4.5.2"
+    "react-native": "0.75.4",
+    "typescript": "^5.0.0"
   },
   "resolutions": {
-    "@types/react": "17.0.21"
+    "@types/react": "18.3.12"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
   },
-
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@react-native-community",
+      "@react-native",
       "prettier"
     ],
     "rules": {
