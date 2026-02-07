@@ -149,22 +149,23 @@ export interface ${COMPONENT_NAME}Props {
   readonly width?: number
   readonly height?: number
   readonly size?: number
+  readonly scale?: number
 }
 
 // Icon kind: 'svg' or 'image'
-type IconKind = 'svg' | 'image'
+export type IconKind = 'svg' | 'image'
 
 // SVG icon metadata for determining fill vs stroke
-type SvgColorType = 'fill' | 'stroke' | 'both'
+export type SvgColorType = 'fill' | 'stroke' | 'both'
 
-interface IconMeta {
+export interface IconMeta {
   kind: IconKind
   svgType?: SvgColorType
   width?: number
   height?: number
 }
 
-const ICON_META: Record<${COMPONENT_NAME}Type, IconMeta> = {
+export const ICON_META: Record<${COMPONENT_NAME}Type, IconMeta> = {
 `)
 
 // Write SVG metadata
@@ -233,27 +234,33 @@ logger.write(`    default: return null
 }
 
 const ${COMPONENT_NAME} = (
-  { type, testID, nativeID, style, containerStyle, isVisible, tint, stroke, color, width, height, size }: ${COMPONENT_NAME}Props,
+  { type, testID, nativeID, style, containerStyle, isVisible, tint, stroke, color, width, height, size, scale = 1 }: ${COMPONENT_NAME}Props,
   ref: React.Ref<View>
 ) => {
   if (isVisible === false) return null
 
-  if (size) {
-    if (!width) width = size
-    if (!height) height = size
-  }
-
   const meta = ICON_META[type]
+
+  // Calculate dimensions based on scale first, then override with explicit values
+  let finalWidth = meta.width ? meta.width / scale : undefined
+  let finalHeight = meta.height ? meta.height / scale : undefined
+
+  if (size) {
+    finalWidth = size
+    finalHeight = size
+  }
+  if (width !== undefined) finalWidth = width
+  if (height !== undefined) finalHeight = height
 
   let content: JSX.Element | null = null
 
   if (meta.kind === 'svg') {
-    content = getSvgIcon(type, tint, stroke, color, width, height, style)
+    content = getSvgIcon(type, tint, stroke, color, finalWidth, finalHeight, style)
   } else {
     // Raster image
     const source = IMAGE_SOURCES[type]
-    const imgWidth = width ?? meta.width ?? 24
-    const imgHeight = height ?? meta.height ?? 24
+    const imgWidth = finalWidth ?? 24
+    const imgHeight = finalHeight ?? 24
 
     content = (
       <Image
