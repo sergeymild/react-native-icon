@@ -39,31 +39,36 @@ export const _IconView =
       };
 
 export const IconView: React.FC<IconProps> = (props) => {
-  let style: StyleProp<ViewStyle> = props.style;
-  if (!style) style = {};
-  style = StyleSheet.flatten(style);
-  const width =
-    style.width ||
-    props.size ||
-    IconSize[props.icon].width / (props.scale ?? 1);
-  const height =
-    style.height ||
-    props.size ||
-    IconSize[props.icon].height / (props.scale ?? 1);
+  try {
+    let style: StyleProp<ViewStyle> = props.style;
+    if (!style) style = {};
+    style = StyleSheet.flatten(style);
+    const width =
+      style.width ||
+      props.size ||
+      IconSize[props.icon].width / (props.scale ?? 1);
+    const height =
+      style.height ||
+      props.size ||
+      IconSize[props.icon].height / (props.scale ?? 1);
 
-  const IconComponent = (
-    <_IconView
-      icon={props.icon}
-      scaleType={props.scaleType}
-      style={[style, { width, height }]}
-      //@ts-ignore
-      tint={props.tint ? processColor(props.tint) : undefined}
-    />
-  );
+    const IconComponent = (
+      <_IconView
+        icon={props.icon}
+        scaleType={props.scaleType}
+        style={[style, { width, height }]}
+        //@ts-ignore
+        tint={props.tint ? processColor(props.tint) : undefined}
+      />
+    );
 
-  if (props.containerStyle) {
-    return <View children={IconComponent} style={props.containerStyle} />;
+    if (props.containerStyle) {
+      return <View children={IconComponent} style={props.containerStyle} />;
+    }
+
+    return IconComponent;
+  } catch (e) {
+    if (__DEV__) console.log('[Index.IconView]', e)
+    return null
   }
-
-  return IconComponent;
 };
