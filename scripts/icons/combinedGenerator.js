@@ -125,7 +125,7 @@ const logger = fs.createWriteStream(fileName)
 // Write imports
 logger.write(`/* eslint-disable */
 import React, { forwardRef, memo } from 'react'
-import { Image, ImageStyle, StyleProp, View, ViewStyle } from 'react-native'
+import { Image, ImageResizeMode, ImageStyle, StyleProp, View, ViewStyle } from 'react-native'
 `)
 
 // Import SVG components
@@ -160,6 +160,7 @@ export interface ${COMPONENT_NAME}Props {
   readonly height?: number
   readonly size?: number
   readonly scale?: number
+  readonly resizeMode?: ImageResizeMode
 }
 
 // Icon kind: 'svg' or 'image'
@@ -244,7 +245,7 @@ logger.write(`    default: return null
 }
 
 const ${COMPONENT_NAME} = (
-  { type, testID, nativeID, style, containerStyle, isVisible, tint, stroke, color, width, height, size, scale = 1 }: ${COMPONENT_NAME}Props,
+  { type, testID, nativeID, style, containerStyle, isVisible, tint, stroke, color, width, height, size, scale = 1, resizeMode }: ${COMPONENT_NAME}Props,
   ref: React.Ref<View>
 ) => {
   if (isVisible === false) return null
@@ -276,7 +277,7 @@ const ${COMPONENT_NAME} = (
       <Image
         source={source}
         style={[{ width: imgWidth, height: imgHeight, tintColor: color || tint }, style as ImageStyle]}
-        resizeMode="contain"
+        resizeMode={resizeMode ?? 'contain'}
       />
     )
   }
