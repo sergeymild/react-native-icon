@@ -8,6 +8,8 @@ const modules = Object.keys({
   ...pak.peerDependencies,
 });
 
+const defaultConfig = getDefaultConfig(__dirname);
+
 /**
  * Metro configuration
  * https://reactnative.dev/docs/metro
@@ -18,9 +20,17 @@ const config = {
   projectRoot: __dirname,
   watchFolders: [root],
 
-  // We need to make sure that only one version is loaded for peerDependencies
-  // So we block them at the root, and alias them to the versions in example's node_modules
+  transformer: {
+    babelTransformerPath: require.resolve('react-native-svg-transformer'),
+  },
+
   resolver: {
+    // Treat .svg as source (transformed to components), not as an asset.
+    assetExts: defaultConfig.resolver.assetExts.filter((ext) => ext !== 'svg'),
+    sourceExts: [...defaultConfig.resolver.sourceExts, 'svg'],
+
+    // We need to make sure that only one version is loaded for peerDependencies
+    // So we block them at the root, and alias them to the versions in example's node_modules
     blockList: modules.map(
       (m) =>
         new RegExp(`^${path.join(root, 'node_modules', m).replace(/[/\\]/g, '[/\\\\]')}[\\/\\\\].*$`)
@@ -33,4 +43,4 @@ const config = {
   },
 };
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+module.exports = mergeConfig(defaultConfig, config);
