@@ -2,12 +2,13 @@ const p = require('path')
 const fs = require('fs')
 
 // Process SVG file: move fill/stroke from child elements to root svg element
-function processSvgFile(filePath) {
-  let content = fs.readFileSync(filePath, 'utf-8')
+// Pure: takes SVG string, returns { content, type, modified }.
+// Moves fill/stroke from child elements to the root <svg> element.
+function processSvgContent(content) {
 
   // Parse SVG root element
   const svgMatch = content.match(/<svg[^>]*>/i)
-  if (!svgMatch) return { type: 'fill', modified: false }
+  if (!svgMatch) return { content, type: 'fill', modified: false }
 
   let svgTag = svgMatch[0]
 
@@ -335,11 +336,20 @@ function processSvgFile(filePath) {
     content = content.replace(/\s+>/g, '>')
     content = content.replace(/>\s+</g, '><')
 
-    // Save updated file
-    fs.writeFileSync(filePath, content, 'utf-8')
   }
 
-  return { type: iconType, modified }
+  return { content, type: iconType, modified }
 }
 
-module.exports = { processSvgFile }
+// Thin fs wrapper around processSvgContent. Preserves original behavior:
+// reads the file, processes, writes back only when modified.
+function processSvgFile(filePath) {
+  const input = fs.readFileSync(filePath, 'utf-8')
+  const { content, type, modified } = processSvgContent(input)
+  if (modified) {
+    fs.writeFileSync(filePath, content, 'utf-8')
+  }
+  return { type, modified }
+}
+
+module.exports = { processSvgContent, processSvgFile }
