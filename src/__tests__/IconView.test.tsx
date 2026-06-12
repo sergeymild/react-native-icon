@@ -43,11 +43,23 @@ describe('IconView', () => {
     expect(p.height).toBe(60)
   })
 
-  it('wraps in a container View when containerStyle is given', () => {
-    const { getByTestId } = render(
+  it('wraps the icon in a container View carrying containerStyle', () => {
+    const { toJSON, getByTestId } = render(
       <IconView icon={'test-icon' as any} containerStyle={{ padding: 8 }} />
     )
-    // Still renders the icon inside.
+    // Host tree root must be the wrapper View carrying containerStyle...
+    const root = toJSON() as any
+    expect(root.type).toBe('View')
+    expect(root.props.style).toEqual({ padding: 8 })
+    // ...with the icon nested inside it.
+    expect(root.children[0].props.testID).toBe('app-icon')
     expect(getByTestId('app-icon')).toBeTruthy()
+  })
+
+  it('does not add a wrapper View when containerStyle is absent', () => {
+    const { toJSON } = render(<IconView icon={'test-icon' as any} />)
+    // Without containerStyle IconView returns the bare icon as the root (no wrapper).
+    const root = toJSON() as any
+    expect(root.props.testID).toBe('app-icon')
   })
 })
