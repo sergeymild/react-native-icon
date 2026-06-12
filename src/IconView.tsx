@@ -13,6 +13,7 @@ export type { AppIconType };
 
 type IconProps = {
   icon: AppIconType;
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle | ImageStyle>;
   containerStyle?: StyleProp<ViewStyle>;
@@ -42,6 +43,7 @@ export const IconView: React.FC<IconProps> = (props) => {
   const iconElement = (
     <AppIcon
       type={props.icon}
+      testID={props.testID}
       containerStyle={iconStyle}
       style={props.contentStyle}
       tint={props.tint}

@@ -1,15 +1,25 @@
 import * as React from 'react';
 
-import { Image, StyleSheet, View } from 'react-native';
-import { IconPath, IconView } from 'react-native-icon';
+import { StyleSheet, View } from 'react-native';
+import { IconView } from 'react-native-icon';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <IconView icon={'some_icon'} style={styles.box} />
-      <IconView icon={'letter'} style={styles.box} />
-      <Image source={{ uri: IconPath.cube() }} style={styles.box} />
-      {/*<Image source={{ uri: IconPath.letter() }} style={styles.box} />*/}
+      <IconView icon={'some_icon'} size={60} testID="icon-some_icon" />
+      <IconView icon={'letter'} size={60} tint="#3366FF" testID="icon-letter" />
+      <IconView
+        icon={'ic_calendar'}
+        size={60}
+        stroke="#E0245E"
+        testID="icon-ic_calendar"
+      />
+      <IconView
+        icon={'cube'}
+        size={60}
+        resizeMode="contain"
+        testID="icon-cube"
+      />
     </View>
   );
 }
@@ -19,11 +29,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
-    backgroundColor: 'yellow',
   },
 });
