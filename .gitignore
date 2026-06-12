@@ -56,6 +56,7 @@ yarn-error.log
 
 # yarn 4 (node-modules linker)
 .yarn/*
+**/.yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
