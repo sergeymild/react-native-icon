@@ -8,7 +8,7 @@ function readProps(getByTestId: any) {
 }
 
 describe('IconView', () => {
-  it('forwards icon type, tint, stroke, color, resizeMode', () => {
+  it('forwards icon type, tint, stroke, color, resizeMode, testID', () => {
     const { getByTestId } = render(
       <IconView
         icon={'test-icon' as any}
@@ -16,6 +16,7 @@ describe('IconView', () => {
         stroke="#222"
         color="#333"
         resizeMode="contain"
+        testID="my-icon"
       />
     )
     const p = readProps(getByTestId)
@@ -24,6 +25,7 @@ describe('IconView', () => {
     expect(p.stroke).toBe('#222')
     expect(p.color).toBe('#333')
     expect(p.resizeMode).toBe('contain')
+    expect(p.testID).toBe('my-icon')
   })
 
   it('maps size prop into width/height', () => {
