@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processSvgFile golden output both-icon.svg matches snapshot 1`] = `
+{
+  "content": "<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1A1A1A" stroke="#1A1A1A"><path d="M4 4h16v16H4z"/><circle cx="12" cy="12" r="3" stroke="none"/><line x1="0" y1="0" x2="24" y2="24" fill="none"/></svg>
+",
+  "result": {
+    "modified": true,
+    "type": "both",
+  },
+}
+`;
+
+exports[`processSvgFile golden output fill-icon.svg matches snapshot 1`] = `
+{
+  "content": "<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1A1A1A"><path d="M4 4h16v16H4z"/><circle cx="12" cy="12" r="3" fill="#1A1A1A" fill-opacity="0.5"/></svg>
+",
+  "result": {
+    "modified": true,
+    "type": "fill",
+  },
+}
+`;
+
+exports[`processSvgFile golden output stroke-icon.svg matches snapshot 1`] = `
+{
+  "content": "<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#1A1A1A"><path d="M4 12h16" stroke-width="2"/><path d="M12 4v16" stroke-width="2"/></svg>
+",
+  "result": {
+    "modified": true,
+    "type": "stroke",
+  },
+}
+`;
