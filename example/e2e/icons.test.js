@@ -8,11 +8,13 @@ describe('AppIcon rendering', () => {
     await device.launchApp({ newInstance: true });
   });
 
-  it('renders all four icons (fill, tint, stroke, raster)', async () => {
+  it('renders all icons (fill, tint, stroke, raster, aspect-ratio)', async () => {
     await expect(element(by.id('icon-some_icon'))).toBeVisible();
     await expect(element(by.id('icon-letter'))).toBeVisible();
     await expect(element(by.id('icon-ic_calendar'))).toBeVisible();
     await expect(element(by.id('icon-cube'))).toBeVisible();
+    await expect(element(by.id('icon-pill-width'))).toBeVisible();
+    await expect(element(by.id('icon-pill-height'))).toBeVisible();
   });
 
   it('captures a screenshot of the icon screen', async () => {

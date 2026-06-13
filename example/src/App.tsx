@@ -22,6 +22,16 @@ export default function App() {
       <View testID="icon-cube">
         <IconView icon={'cube'} size={60} resizeMode="contain" />
       </View>
+
+      {/* Aspect-ratio sizing. wide_pill is 48x16 (3:1). */}
+      {/* width only → height auto-derives to keep 3:1 (120 → 40). */}
+      <View testID="icon-pill-width">
+        <IconView icon={'wide_pill'} width={120} tint="#1A1A1A" />
+      </View>
+      {/* height only → width auto-derives to keep 3:1 (16 → 48). */}
+      <View testID="icon-pill-height">
+        <IconView icon={'wide_pill'} height={16} tint="#888888" />
+      </View>
     </View>
   );
 }

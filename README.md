@@ -173,12 +173,33 @@ Rule of thumb: **use `tint` for filled icons, `stroke` for outline icons, and
 <IconView icon="badge"     size={24} color="#111111" />  // both       → uniform color
 ```
 
+### Sizing
+
+| You pass            | Result                                                              |
+| ------------------- | ------------------------------------------------------------------ |
+| `size={24}`         | A 24×24 square.                                                     |
+| `width={120}`       | Width 120; **height auto-derives** from the icon's aspect ratio.   |
+| `height={16}`       | Height 16; **width auto-derives** from the icon's aspect ratio.    |
+| `width` + `height`  | Used exactly as given (may distort).                               |
+| nothing             | The icon's intrinsic size (from its `viewBox` / image dimensions). |
+
+```tsx
+// wide_pill is 48×16 (3:1):
+<IconView icon="wide_pill" width={120} />  // → rendered 120×40
+<IconView icon="wide_pill" height={16} />  // → rendered 48×16
+```
+
+Aspect ratio comes from the SVG's `viewBox` (or the image's pixel dimensions),
+captured into `AppIcon.tsx` at generation time.
+
 ### Props
 
 | Prop             | Type                                 | Description                                                          |
 | ---------------- | ------------------------------------ | ------------------------------------------------------------------- |
 | `icon`           | generated `AppIconType`              | Icon name. Autocompletes with every generated icon.                 |
 | `size`           | `number`                             | Square size; sets both width and height.                            |
+| `width`          | `number`                             | Explicit width. Without `height`, height keeps the aspect ratio.    |
+| `height`         | `number`                             | Explicit height. Without `width`, width keeps the aspect ratio.     |
 | `tint`           | `string`                             | Tint color (applies to fill or stroke depending on the icon type).  |
 | `stroke`         | `string`                             | Stroke color (for outline icons).                                   |
 | `color`          | `string`                             | Uniform color applied to fill and/or stroke per the icon's type.    |
