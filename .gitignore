@@ -4,7 +4,7 @@
 
 # XDE
 .expo/
-
+/src/types/*
 # VSCode
 .vscode/
 jsconfig.json
@@ -28,6 +28,10 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+.xcode.env.local
+
+# Detox e2e
+artifacts/
 
 # Android/IJ
 #
@@ -53,6 +57,16 @@ node_modules/
 npm-debug.log
 yarn-debug.log
 yarn-error.log
+
+# yarn 4 (node-modules linker)
+.yarn/*
+**/.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 
 # BUCK
 buck-out/

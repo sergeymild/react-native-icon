@@ -1,40 +1,41 @@
-const fs = require('fs');
-const parseString = require('xml2js').parseString;
+// Extract an SVG's intrinsic dimensions (used for aspect-ratio-aware sizing).
+// Prefers viewBox (most reliable), falls back to width/height attributes.
+// Returns { width, height } or null when no usable dimensions are found.
 
-function get(path, callback) {
-  const attrToLowerCase = function (name) {
-    return name.toLowerCase();
-  };
+function getSvgDimensions(content) {
+  if (typeof content !== 'string') return null
 
-  let height = null;
-  let width = null;
+  const svgMatch = content.match(/<svg[^>]*>/i)
+  if (!svgMatch) return null
+  const svgTag = svgMatch[0]
 
-  fs.readFile(path, { encoding: 'utf8' }, function (err, data) {
-    if (err) return callback(err);
-    parseString(
-      data,
-      { strict: false, attrkey: 'ATTR', attrNameProcessors: [attrToLowerCase] },
-      function (err, result) {
-        if (err) return callback(err);
-        var hasWidthHeightAttr =
-          result.SVG.ATTR.width && result.SVG.ATTR.height;
-        if (hasWidthHeightAttr) {
-          height = result.SVG.ATTR.height;
-          width = result.SVG.ATTR.width;
-        } else {
-          width = result.SVG.ATTR.viewbox
-            .toString()
-            .replace(/^\d+\s\d+\s(\d+\.?\d+)\s(\d+\.?\d+)/, '$1');
-          height = result.SVG.ATTR.viewbox
-            .toString()
-            .replace(/^\d+\s\d+\s(\d+\.?\d+)\s(\d+\.?\d+)/, '$2');
-        }
-        const w = parseFloat(width);
-        const h = parseFloat(height);
-        callback(null, { height: h, width: w });
+  // 1. viewBox="minX minY width height"
+  const viewBox = svgTag.match(/viewBox\s*=\s*["']\s*([^"']+?)\s*["']/i)
+  if (viewBox) {
+    const parts = viewBox[1].trim().split(/[\s,]+/).map(Number)
+    if (parts.length === 4) {
+      const [, , w, h] = parts
+      if (Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
+        return { width: w, height: h }
       }
-    );
-  });
+    }
+  }
+
+  // 2. width / height attributes (strip units like "px")
+  const parseAttr = (name) => {
+    const m = svgTag.match(new RegExp(`${name}\\s*=\\s*["']\\s*([\\d.]+)`, 'i'))
+    if (!m) return undefined
+    const v = Number(m[1])
+    return Number.isFinite(v) && v > 0 ? v : undefined
+  }
+
+  const width = parseAttr('width')
+  const height = parseAttr('height')
+  if (width !== undefined && height !== undefined) {
+    return { width, height }
+  }
+
+  return null
 }
 
-module.exports.getSvgDimensions = get;
+module.exports = { getSvgDimensions }
