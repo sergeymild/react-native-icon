@@ -12,10 +12,12 @@ export default function App() {
         <IconView icon={'some_icon'} size={60} />
       </View>
       <View testID="icon-letter">
-        <IconView icon={'letter'} size={60} tint="#3366FF" />
+        {/* stroke icon → recolor via stroke */}
+        <IconView icon={'letter'} size={60} stroke="#3366FF" />
       </View>
       <View testID="icon-ic_calendar">
-        <IconView icon={'ic_calendar'} size={60} stroke="#E0245E" />
+        {/* fill icon → recolor via tint (single color) */}
+        <IconView icon={'ic_calendar'} size={60} tint="#E0245E" />
       </View>
       <View testID="icon-cube">
         <IconView icon={'cube'} size={60} resizeMode="contain" />
