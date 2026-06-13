@@ -1,10 +1,7 @@
 /* Detox e2e: verifies the generated AppIcon components render on screen.
  *
- * NOTE on matchers: IconView forwards `testID` to AppIcon, which sets it as the
- * host View's `accessibilityLabel` (not the iOS accessibilityIdentifier). Detox
- * `by.id()` matches the identifier, so it would NOT resolve here — we match by
- * `by.label()` against the same string the example passes as testID
- * (e.g. "icon-some_icon").
+ * Each icon in App.tsx is wrapped in a View with a testID; RN maps a View's
+ * testID to the iOS accessibilityIdentifier, so Detox `by.id()` resolves it.
  */
 describe('AppIcon rendering', () => {
   beforeAll(async () => {
@@ -12,10 +9,10 @@ describe('AppIcon rendering', () => {
   });
 
   it('renders all four icons (fill, tint, stroke, raster)', async () => {
-    await expect(element(by.label('icon-some_icon'))).toBeVisible();
-    await expect(element(by.label('icon-letter'))).toBeVisible();
-    await expect(element(by.label('icon-ic_calendar'))).toBeVisible();
-    await expect(element(by.label('icon-cube'))).toBeVisible();
+    await expect(element(by.id('icon-some_icon'))).toBeVisible();
+    await expect(element(by.id('icon-letter'))).toBeVisible();
+    await expect(element(by.id('icon-ic_calendar'))).toBeVisible();
+    await expect(element(by.id('icon-cube'))).toBeVisible();
   });
 
   it('captures a screenshot of the icon screen', async () => {
