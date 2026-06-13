@@ -2,9 +2,10 @@ const p = require('path')
 const fs = require('fs')
 const { imageSize } = require('image-size')
 const { processSvgFile } = require('./svgProcessor')
+const { getSvgDimensions } = require('./getSvgDimensions')
 
 const COMPONENT_NAME = 'AppIcon'
-const SKIP_DIRS = ['node_modules', '.git', 'build', 'android', 'ios']
+const SKIP_DIRS = ['node_modules', '.git', 'build', 'android', 'ios', 'artifacts']
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg']
 
 // Get project directory from environment or use current directory
@@ -96,11 +97,14 @@ if (svgFiles.length === 0 && imageFiles.length === 0) {
 // Process SVG files
 console.log('🔄 Processing SVG files...')
 const svgMetadata = new Map()
+const svgDimensions = new Map()
 let modifiedCount = 0
 
 for (const svg of svgFiles) {
   const result = processSvgFile(svg.path)
   svgMetadata.set(svg.name, result.type)
+  // Capture intrinsic dimensions (from viewBox) for aspect-ratio-aware sizing.
+  svgDimensions.set(svg.name, getSvgDimensions(fs.readFileSync(svg.path, 'utf-8')))
   if (result.modified) {
     modifiedCount++
     console.log(`  ✓ Modified: ${svg.name} (type: ${result.type})`)
@@ -189,7 +193,9 @@ export const ICON_META: Record<${COMPONENT_NAME}Type, IconMeta> = {
 // Write SVG metadata
 for (const svg of svgFiles) {
   const svgType = svgMetadata.get(svg.name) || 'fill'
-  logger.write(`  '${svg.name}': { kind: 'svg', svgType: '${svgType}' },\n`)
+  const dims = svgDimensions.get(svg.name)
+  const dimsStr = dims ? `, width: ${dims.width}, height: ${dims.height}` : ''
+  logger.write(`  '${svg.name}': { kind: 'svg', svgType: '${svgType}'${dimsStr} },\n`)
 }
 
 // Write image metadata

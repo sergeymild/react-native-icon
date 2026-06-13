@@ -28,12 +28,43 @@ describe('IconView', () => {
     expect(p.testID).toBe('my-icon')
   })
 
-  it('maps size prop into width/height', () => {
+  it('maps size prop into a square width/height', () => {
     const { getByTestId } = render(<IconView icon={'test-icon' as any} size={40} />)
     const p = readProps(getByTestId)
     expect(p.width).toBe(40)
     expect(p.height).toBe(40)
-    expect(p.size).toBe(40)
+  })
+
+  it('width only → height keeps the icon aspect ratio (intrinsic 40x20)', () => {
+    const { getByTestId } = render(<IconView icon={'test-icon' as any} width={100} />)
+    const p = readProps(getByTestId)
+    // height = 100 * (20/40) = 50
+    expect(p.width).toBe(100)
+    expect(p.height).toBe(50)
+  })
+
+  it('height only → width keeps the icon aspect ratio (intrinsic 40x20)', () => {
+    const { getByTestId } = render(<IconView icon={'test-icon' as any} height={50} />)
+    const p = readProps(getByTestId)
+    // width = 50 * (40/20) = 100
+    expect(p.width).toBe(100)
+    expect(p.height).toBe(50)
+  })
+
+  it('both width and height are used as given (no aspect adjustment)', () => {
+    const { getByTestId } = render(
+      <IconView icon={'test-icon' as any} width={70} height={70} />
+    )
+    const p = readProps(getByTestId)
+    expect(p.width).toBe(70)
+    expect(p.height).toBe(70)
+  })
+
+  it('falls back to intrinsic size when nothing is given', () => {
+    const { getByTestId } = render(<IconView icon={'test-icon' as any} />)
+    const p = readProps(getByTestId)
+    expect(p.width).toBe(40)
+    expect(p.height).toBe(20)
   })
 
   it('derives width/height from contentStyle dimensions', () => {

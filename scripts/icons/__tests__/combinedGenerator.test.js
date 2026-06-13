@@ -37,7 +37,15 @@ describe('combinedGenerator', () => {
 
   it('records svgType metadata (fill vs stroke)', () => {
     const out = fs.readFileSync(path.join(outDir, 'AppIcon.tsx'), 'utf-8')
-    expect(out).toMatch(/'fill_icon': \{ kind: 'svg', svgType: 'fill' \}/)
-    expect(out).toMatch(/'stroke_icon': \{ kind: 'svg', svgType: 'stroke' \}/)
+    expect(out).toMatch(/'fill_icon': \{ kind: 'svg', svgType: 'fill'/)
+    expect(out).toMatch(/'stroke_icon': \{ kind: 'svg', svgType: 'stroke'/)
+  })
+
+  it('records intrinsic SVG dimensions from the viewBox', () => {
+    const out = fs.readFileSync(path.join(outDir, 'AppIcon.tsx'), 'utf-8')
+    // fixtures use viewBox="0 0 24 24"
+    expect(out).toMatch(
+      /'fill_icon': \{ kind: 'svg', svgType: 'fill', width: 24, height: 24 \}/
+    )
   })
 })
