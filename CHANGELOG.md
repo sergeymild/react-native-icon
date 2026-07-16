@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.1
+
+Removed the `packageManager: "yarn@4.13.0"` field from `package.json`.
+
+The library is consumed as a git dependency, so the entire repository — including
+`package.json` — ends up in the consumer's `node_modules`. When a consuming project
+runs `yarn` inside the package (for example,
+`cd node_modules/react-native-icon/scripts/icons && yarn`), yarn 1 walks up the
+directory tree, finds our `packageManager` field first, and hard-errors:
+
+```
+error This project's package.json defines "packageManager": "yarn@4.13.0".
+      However the current global version of Yarn is 1.22.22.
+```
+
+The pin only ever mattered for developing this library, but it broke installs for
+every consumer not on yarn 4. The package no longer dictates a yarn version and
+installs under any of them.
+
 ## 0.3.0
 
 Эта версия переносит в библиотеку набор изменений, которые раньше жили в
